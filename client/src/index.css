@@ -2,20 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-.input{
-  @apply px-4 py-2 border-b border-gray-500 focus:outline-none;
+
+/* body 기본 스타일 */
+body {
+  @apply font-sans text-white text-center
+  min-h-screen bg-gradient-to-t from-[#0f0c29] via-[#302b63] to-[#24243e];
 }
 
-/* body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* input 스타일 */
+@layer components{
+  .input {
+  @apply bg-transparent 
+         placeholder-white 
+         border-b 
+         border-white 
+         text-sm 
+         focus:ring-blue-500 
+         focus:outline-none 
+         block 
+         w-full 
+         p-2.5;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-} */
+
+/* 커스텀 버튼 컴포넌트 */
+@layer components {
+  .button {
+    @apply 
+           ml-2 
+           bg-transparent 
+           rounded-lg 
+           border 
+           border-blue-700 
+           hover:bg-blue-800 
+           hover:bg-gradient-to-b from-[#0575E6] to-[#021B79] 
+           hover:shadow-md 
+           shadow-blue-500/50 
+           active:ring-4 
+           active:outline-none  
+           shadow-lg 
+           ring-1 
+           ring-blue-500
+           px-4 py-2;
+  }
+}

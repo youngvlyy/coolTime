@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import cors from "cors";
 import axios from "axios";
 import dotenv from "dotenv";
@@ -16,12 +16,23 @@ app.get("/", (req, res) => {
   res.send("서버 정상 실행 중");
 });
 
+const searchFoodNm = (foodNm: string, target: string): boolean => {
+  // 공통 글자 찾기
+  const searchnm = [...foodNm].filter(ch => target.includes(ch));
+
+  console.log("searchnm:", searchnm);
+
+  // 2글자 이상 같으면 true 리턴
+  return searchnm.length >= 2;
+};
+
 // 음식 이름으로 공공 API 호출
 app.get("/api/food", async (req, res) => {
   const { foodNm } = req.query as { foodNm: string };
-
+  const servicekey = process.env.SERVICE_KEY;
 
   if (!foodNm) return res.status(400).json({ error: "foodNm 필요" });
+  if (!servicekey) return res.status(400).json({ error: "apikey 필요" });
 
   try {
     const response = await axios.get(
@@ -32,7 +43,14 @@ app.get("/api/food", async (req, res) => {
           type: "json",
           foodNm
         }
-      });
+      }
+    );
+
+    //const items = response.data?.response?.body?.items ?? [];
+    // foodNm 비교 필터링
+    // const matched = items.filter((item: any) =>
+    //   searchFoodNm(foodNm, item.foodNm)
+    // );
     console.log("공공 API 원본 응답:", JSON.stringify(response.data, null, 2));
     res.json(response.data);
   } catch (error) {
@@ -41,7 +59,19 @@ app.get("/api/food", async (req, res) => {
   }
 });
 
+
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+//로그인
+// var admin = require("firebase-admin");
+
+// var serviceAccount = require("path/to/serviceAccountKey.json");
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
 
