@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "concurrently \"ts-node -P tsconfig.json serve/index.ts\" \"npm --prefix client run dev\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"ts-node -P tsconfig.json serve/index.ts\" \"npm --prefix client run dev\"",
+    "build": "tsc -p serve/tsconfig.json && npm --prefix client run build",
+    "start": "node serve/dist/index.js"
   },
   "author": "sy",
   "license": "ISC",
@@ -15,7 +16,10 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "firebase": "^12.2.1",
-    "http-proxy-middleware": "^3.0.5"
+    "firebase-admin": "^13.5.0",
+    "http-proxy-middleware": "^3.0.5",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

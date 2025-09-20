@@ -25,7 +25,7 @@ const App: React.FC = () => {
         <Route path="/" element={<Home user={user} />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/mypage" element={<Mypage />} />
-        <Route path="/cooltime" element={<CoolTimeSetting user={user} />} />
+        <Route path="/cooltime" element={<CoolTimeSetting />} />
       </Routes>
     </Router>
   );
