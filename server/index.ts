@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import axios from "axios";
+import path from "path";
 import cooltimeRoutes from "./routes/coolTime";
 
 dotenv.config();
@@ -21,11 +22,14 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.error("MongoDB connection error:", err));
 
-// 기본 라우터
-app.get("/", (req, res) => res.send("서버 정상 실행 중"));
 
 app.listen(4000, "0.0.0.0", () => console.log(`Server running on ${PORT}`));
 
+
+app.use(express.static("client/dist"));
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
+});
 
 
 
