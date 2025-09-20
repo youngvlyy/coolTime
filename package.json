@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "dev": "concurrently \"ts-node -P tsconfig.json server/index.ts\" \"npm --prefix client run dev\"",
-    "build": "tsc -p server/tsconfig.json && npm --prefix client run build",
-    "start": "node server/dist/index.js"
-  },
+  "dev": "concurrently \"ts-node server/index.ts\" \"npm --prefix client run dev\"",
+  "build": "tsc && npm --prefix client run build",
+  "start": "node dist/server/index.js"
+}
+,
   "author": "sy",
   "license": "ISC",
   "dependencies": {
