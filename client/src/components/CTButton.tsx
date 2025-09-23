@@ -1,11 +1,13 @@
+// src/components/CTButton.tsx
 import React, { useRef } from "react";
 
 interface CTButtonProps {
   iconUrl: string;
-  cooldown: number;
+  cooldown: number;          // 쿨타임(초 단위)
+  onClick?: () => void;      // 클릭 시 호출할 함수 (API 호출 등)
 }
 
-const CTButton: React.FC<CTButtonProps> = ({ iconUrl, cooldown }) => {
+const CTButton: React.FC<CTButtonProps> = ({ iconUrl, cooldown, onClick }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isCoolingRef = useRef(false);
   const startTimeRef = useRef(0);
@@ -15,6 +17,7 @@ const CTButton: React.FC<CTButtonProps> = ({ iconUrl, cooldown }) => {
       isCoolingRef.current = true;
       startTimeRef.current = performance.now();
 
+      // 캔버스 쿨타임 시각화
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -26,7 +29,7 @@ const CTButton: React.FC<CTButtonProps> = ({ iconUrl, cooldown }) => {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 기본 어둠 덮기
+        // 어둡게 덮기
         ctx.beginPath();
         ctx.moveTo(canvas.width / 2, canvas.height / 2);
         const angle = -Math.PI / 2 + progress * 2 * Math.PI;
@@ -44,6 +47,9 @@ const CTButton: React.FC<CTButtonProps> = ({ iconUrl, cooldown }) => {
       };
 
       drawFrame();
+
+      // 클릭 시 전달된 함수 실행 (API 호출 등)
+      if (onClick) onClick();
     }
   };
 

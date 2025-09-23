@@ -1,21 +1,32 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-export interface IUser extends Document {
-  firebaseUid: string;
-  email?: string;
-  displayName?: string;
-  favorites: string[];
-  cooltimeSeconds: number;
-  createdAt: Date;
+export interface ICoolFood {
+  _id?: string;
+  name: string;
+  calories: number;
+  cooldown: number;
+  lastEaten: Date | null;
+  savedCalories: number;
 }
 
-const UserSchema: Schema = new Schema({
-  firebaseUid: { type: String, required: true, unique: true },
-  email: { type: String },
-  displayName: { type: String },
-  favorites: { type: [String], default: [] },
-  cooltimeSeconds: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
+export interface IUser extends Document {
+  uid: string;
+  email: string;
+  coolFoods: ICoolFood[];
+}
+
+const CoolFoodSchema = new Schema<ICoolFood>({
+  name: { type: String, required: true },
+  calories: { type: Number, required: true },
+  cooldown: { type: Number, required: true },
+  lastEaten: { type: Date, default: null },
+  savedCalories: { type: Number, default: 0 },
 });
 
-export default mongoose.models.User || mongoose.model<IUser>("User", UserSchema);
+const UserSchema = new Schema<IUser>({
+  uid: { type: String, required: true, unique: true },
+  email: { type: String, required: true },
+  coolFoods: [CoolFoodSchema],
+});
+
+export default mongoose.model<IUser>("User", UserSchema);
