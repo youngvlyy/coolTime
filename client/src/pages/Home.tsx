@@ -1,118 +1,95 @@
-import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebaseConfig";
-import CTButton from "../components/CTButton";
-import Cool from "../assets/react.svg";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
-interface ICoolFood {
-  _id: string;
-  name: string;
-  calories: number;
-  cooldown: number; // 일 단위
-  lastEaten: string | null;
-  savedCalories: number;
-}
-
-interface IUser {
-  uid: string;
-  email: string;
-  coolFoods: ICoolFood[];
-}
+import CTButton from "../components/CTButton";
+import { calcCooldown } from "../utils/cooldown";
+import type { BodyProfile, User, Food} from "../models/db";
+import { signOut } from "firebase/auth";
+import { auth } from "../firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 interface HomeProps {
-  user: { uid: string; email: string } | null;
+  user: User;
 }
 
 const Home: React.FC<HomeProps> = ({ user }) => {
+  const [body, setBody] = useState<BodyProfile | null>(null);
+  const [foods, setFoods] = useState<Food[]>([]);
   const navigate = useNavigate();
-  const [userData, setUserData] = useState<IUser | null>(null);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    navigate("/auth");
-  };
-
-  // 유저 정보 가져오기 (자동 생성 + 조회)
+  /** ✅ 유저 정보 로드 */
   useEffect(() => {
-    if (!user) return;
-
-    axios
-      .get(`/api/user/${user.uid}/${encodeURIComponent(user.email)}`)
-      .then((res) => setUserData(res.data))
-      .catch((err) => console.error(err));
+    axios.get(`/api/user/${user.uid}/${user.email}`).then((res) => {
+      setBody(res.data.body[0]|| []);
+      setFoods(res.data.food || []);
+    });
   }, [user]);
 
-  // 쿨타임 시작 및 서버 PATCH
-  const startCooldown = async (food: ICoolFood) => {
-    if (!user) return;
+  /** 쿨타임 버튼 클릭 */
+  const handleEat = async (foodId: string) => {
+    if (!body) return;
+
+    const food = foods.find((f) => f._id === foodId);
+    if (!food) return;
+
+    const newCooldown = calcCooldown(food.name, body.bmi);
+
+    const res = await axios.patch(`/api/user/${user.uid}/food/${foodId}`, {
+      lastEaten: new Date().toISOString(),
+      cooldown: newCooldown,
+    });
+
+    setFoods((prev) => prev.map((f) => (f._id === foodId ? res.data : f)));
+  };
+
+  /** 로그아웃 */
+  const handleLogout = async () => {
     try {
-      const res = await axios.patch(
-        `/api/user/${user.uid}/food/${food._id}/eat`
-      );
-      setUserData((prev) =>
-        prev
-          ? {
-              ...prev,
-              coolFoods: prev.coolFoods.map((f) =>
-                f._id === food._id ? res.data : f
-              ),
-            }
-          : null
-      );
-    } catch (err) {
-      console.error(err);
+      await signOut(auth);
+      navigate("/auth");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
     }
   };
-  
+
+  /** 마이페이지 이동 */
+  const goToMyPage = () => {
+    navigate("/mypage");
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 bg-gradient-to-t from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
-      <div className="w-full flex justify-end p-4">
-        {user ? (
-          <div>
-            <button
-              onClick={() => navigate("/mypage")}
-              className="px-4 py-2 button mr-5"
-            >
-              Mypage
-            </button>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors button"
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <button onClick={() => navigate("/auth")} className="button">
-            Login
+    <div className="p-4">
+      {/* 🔹 상단 헤더 */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-bold">홈</h1>
+        <div className="flex gap-2">
+          <button
+            onClick={goToMyPage}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          >
+            마이페이지
           </button>
-        )}
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            로그아웃
+          </button>
+        </div>
       </div>
 
-      <h1 className="text-5xl font-bold mt-10">Cool Time Goal</h1>
-
-      {user && userData && (
-        <div className="mt-10 grid grid-cols-3 gap-6">
-          {userData.coolFoods.map((food) => (
-            <div key={food._id} className="flex flex-col items-center">
-              <p className="mb-2 font-semibold text-lg">
-                {food.name} ({food.calories} kcal)
-              </p>
-              <CTButton
-                iconUrl={Cool}
-                cooldown={food.cooldown * 24 * 60 * 60} // 초 단위
-                onClick={() => startCooldown(food)}
-              />
-              <p className="mt-2 text-sm">
-                Saved: {food.savedCalories} kcal
-              </p>
-            </div>
-          ))}
-        </div>
+      {/* 🔹 BMI 정보 */}
+      {body && (
+        <p className="text-gray-700">
+          키: {body.height}cm, 몸무게: {body.weight}kg → BMI:{body.bmi}
+        </p>
       )}
+
+      {/* 🔹 음식 버튼 목록 */}
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {foods && foods.map((food) => (
+          <CTButton key={food.name} onEat={handleEat} {...food} />
+        ))}
+      </div>
     </div>
   );
 };

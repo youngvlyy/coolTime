@@ -1,145 +1,129 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { calcBMI } from "../utils/cooldown";
+// import { FOOD_LIST } from "../models/db"
+import { FOOD_LIST } from "../models/db";
 
-interface ICoolFood {
-  _id: string;
-  name: string;
-  calories: number;
-  cooldown: number;
-  lastEaten: string | null;
-  savedCalories: number;
-  startDate?: string; // 쿨타임 시작일
-  endDate?: string; // 쿨타임 종료일
-}
-
-interface IUser {
-  uid: string;
-  email: string;
-  coolFoods: ICoolFood[];
-}
-
-interface MyPageProps {
+interface MypageProps {
   user: { uid: string; email: string } | null;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ user }) => {
-  const [userData, setUserData] = useState<IUser | null>(null);
-  const [selectedFood, setSelectedFood] = useState<ICoolFood | null>(null);
-  const [cooldownDays, setCooldownDays] = useState(1);
+const Mypage: React.FC<MypageProps> = ({ user }) => {
+  const [height, setHeight] = useState<number | null>(null);
+  const [weight, setWeight] = useState<number | null>(null);
+  const [bmi, setBmi] = useState<number | null>(null);
+  const [hasBody, setHasBody] = useState<boolean>(false); // ✅ 이미 등록된 body 여부
+  const navigate = useNavigate();
 
+  /** ✅ 마운트 시 DB에서 기존 body 존재 여부 확인 */
   useEffect(() => {
     if (!user) return;
-
     axios
-      .get(`/api/user/${user.uid}/${encodeURIComponent(user.email)}`)
-      .then((res) => setUserData(res.data))
-      .catch((err) => console.error(err));
+      .get(`/api/user/${user.uid}/${user.email}`)
+      .then((res) => {
+        const body = res.data.body?.[0];
+        if (body) {
+          setHasBody(true);
+          setHeight(body.height);
+          setWeight(body.weight);
+          setBmi(body.bmi);
+        }
+      })
+      .catch(() => setHasBody(false));
   }, [user]);
 
-  // 음식 선택 → 쿨타임 입력
-  const handleSelectFood = (food: ICoolFood) => {
-    setSelectedFood(food);
-    setCooldownDays(food.cooldown);
-  };
+  /** 저장 버튼 클릭 */
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!height || !weight) return alert("키와 몸무게를 입력하세요");
+    if (!user) return;
 
-  // 쿨타임 시작
-  const startCooldown = async () => {
-    if (!user || !selectedFood) return;
-
-    const today = new Date();
-    const endDate = new Date();
-    endDate.setDate(today.getDate() + cooldownDays);
+    const calculatedBMI = calcBMI(height, weight);
+    setBmi(calculatedBMI);
 
     try {
-      const res = await axios.patch(
-        `/api/user/${user.uid}/food/${selectedFood._id}/eat`,
-        { startDate: today.toISOString(), endDate: endDate.toISOString() }
+      const endpoint = "/api/bodyprofile";
+      const method = "patch";
+
+      await axios({
+        method,
+        url: endpoint,
+        data: {
+          uid: user.uid,
+          email: user.email,
+          body: { height, weight, bmi: calculatedBMI },
+          food: FOOD_LIST.map((food) => food.name)
+        },
+      });
+
+      alert(
+        hasBody
+          ? `수정 완료! 새로운 BMI: ${calculatedBMI.toFixed(2)}`
+          : `등록 완료! BMI: ${calculatedBMI.toFixed(2)}`
       );
-      // 서버에서 savedCalories, lastEaten 업데이트
-      setUserData((prev) =>
-        prev
-          ? {
-              ...prev,
-              coolFoods: prev.coolFoods.map((f) =>
-                f._id === selectedFood._id ? { ...res.data, startDate: today.toISOString(), endDate: endDate.toISOString() } : f
-              ),
-            }
-          : null
-      );
-      setSelectedFood(null);
+
+      navigate("/");
     } catch (err) {
       console.error(err);
+      alert("저장 중 오류가 발생했습니다.");
     }
   };
 
-  // 날짜별 절약 칼로리 계산
-  const calculateSavedCalories = (food: ICoolFood) => {
-    if (!food.startDate) return food.savedCalories;
-
-    const start = new Date(food.startDate);
-    const today = new Date();
-    const diffDays = Math.max(0, Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-    return diffDays * food.calories;
-  };
-
-  if (!userData) return <div>Loading...</div>;
-
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-t from-[#0f0c29] via-[#302b63] to-[#24243e] text-white">
-      <h1 className="text-4xl font-bold mb-6">My Cool Foods</h1>
-
-      {/* 음식 버튼 */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        {userData.coolFoods.map((food) => (
-          <button
-            key={food._id}
-            onClick={() => handleSelectFood(food)}
-            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600"
-          >
-            {food.name} ({food.calories} kcal)
-          </button>
-        ))}
+    <div className="p-6 space-y-6">
+      <div className="flex justify-between items-center">
+        <button
+          onClick={() => navigate("/")}
+          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+        >
+          홈으로
+        </button>
+        <h2 className="text-xl font-bold">마이페이지</h2>
       </div>
 
-      {/* 쿨타임 입력 모달 */}
-      {selectedFood && (
-        <div className="p-4 bg-white/10 rounded mb-6">
-          <h2 className="text-xl font-semibold mb-2">Set Cooldown for {selectedFood.name}</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <label htmlFor="height">키:</label>
           <input
             type="number"
-            value={cooldownDays}
-            min={1}
-            onChange={(e) => setCooldownDays(Number(e.target.value))}
-            className="input p-2 mr-2 text-center"
-          />
-          <button
-            onClick={startCooldown}
-            className="button  mt-5"
-          >
-            Start Cooldown
-          </button>
+            id="height"
+            value={height ?? ""}
+            onChange={(e) =>
+              setHeight(e.target.value ? Number(e.target.value) : null)
+            }
+            className="border px-2 py-1 rounded"
+          />{" "}
+          cm
         </div>
-      )}
 
-      {/* 쿨타임 진행 현황 */}
-      <div className="flex flex-col gap-3">
-        {userData.coolFoods.map((food) => (
-          <div key={food._id} className="p-3 rounded bg-white/10">
-            <p className="font-semibold">{food.name}</p>
-            <p>Calories per session: {food.calories}</p>
-            <p>
-              Saved Calories: {calculateSavedCalories(food)}
-            </p>
-            {food.startDate && food.endDate && (
-              <p>
-                Cooldown: {new Date(food.startDate).toLocaleDateString()} ~ {new Date(food.endDate).toLocaleDateString()}
-              </p>
-            )}
-          </div>
-        ))}
-      </div>
+        <div className="flex items-center space-x-2">
+          <label htmlFor="weight">몸무게:</label>
+          <input
+            type="number"
+            id="weight"
+            value={weight ?? ""}
+            onChange={(e) =>
+              setWeight(e.target.value ? Number(e.target.value) : null)
+            }
+            className="border px-2 py-1 rounded"
+          />{" "}
+          kg
+        </div>
+
+
+
+        <button
+          type="submit"
+          className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+        >
+          {hasBody ? "수정하기" : "등록하기"}
+        </button>
+      </form>
+
+      {bmi && <p className="mt-4 text-gray-700">현재 BMI: {bmi.toFixed(2)}</p>}
     </div>
   );
 };
 
-export default MyPage;
+export default Mypage;

@@ -8,7 +8,17 @@ import { useAuth } from "./hooks/useAuth";
 function App() {
   const user = useAuth();
 
-  return (
+  if (user === null) {
+    // 로그인 안 된 상태라면 로그인 페이지로 이동
+    return (
+      <Router>
+        <Routes>
+          <Route path="*" element={<Auth />} />
+        </Routes>
+      </Router>
+    );
+  }else{
+    return (
     <Router>
       <Routes>
         <Route path="/" element={<Home user={user} />} />
@@ -16,7 +26,10 @@ function App() {
         <Route path="/auth" element={<Auth />} />
       </Routes>
     </Router>
-  );
+    );
+  }
+  
+  
 }
 
 export default App;

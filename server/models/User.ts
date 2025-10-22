@@ -1,32 +1,44 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICoolFood {
-  _id?: string;
+  _id: string;
   name: string;
-  calories: number;
-  cooldown: number;
-  lastEaten: Date | null;
-  savedCalories: number;
+  cooldown: number,
+  lastEaten: string; // timestamp (ms)
+}
+
+export interface BodyProfile {
+  height: number;
+  weight: number;
+  bmi : number;
 }
 
 export interface IUser extends Document {
   uid: string;
   email: string;
-  coolFoods: ICoolFood[];
+  body : BodyProfile[];
+  food : ICoolFood[];
 }
 
+const BodyProfileSchema = new Schema<BodyProfile>(
+  {
+  height: {type: Number, required: true},
+  weight: {type: Number, required: true},
+  bmi: {type: Number, required: true}
+  }
+)
 const CoolFoodSchema = new Schema<ICoolFood>({
   name: { type: String, required: true },
-  calories: { type: Number, required: true },
-  cooldown: { type: Number, required: true },
-  lastEaten: { type: Date, default: null },
-  savedCalories: { type: Number, default: 0 },
+  lastEaten: { type: String, required: true },
+  cooldown: { type: Number, default: 0 },
+  _id: { type: String, required: true }
 });
 
 const UserSchema = new Schema<IUser>({
   uid: { type: String, required: true, unique: true },
   email: { type: String, required: true },
-  coolFoods: [CoolFoodSchema],
+  body: [BodyProfileSchema],
+  food: [CoolFoodSchema]
 });
 
 export default mongoose.model<IUser>("User", UserSchema);

@@ -14,6 +14,7 @@ const Auth: React.FC = () => {
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
+
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
       }
@@ -24,7 +25,7 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-[#24243e] via-[#302b63] to-[#0f0c29] text-white">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b ">
       <h1 className="text-4xl font-bold mb-6">{isLogin ? "로그인" : "회원가입"}</h1>
       <form onSubmit={handleSubmit} className="w-80 flex flex-col space-y-4">
         <input
@@ -50,7 +51,7 @@ const Auth: React.FC = () => {
       </form>
       <p className="mt-4">
         {isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}{" "}
-        <button onClick={() => setIsLogin(!isLogin)} className="underline">
+        <button onClick={() => setIsLogin(!isLogin)} className="new">
           {isLogin ? "회원가입" : "로그인"}
         </button>
       </p>
