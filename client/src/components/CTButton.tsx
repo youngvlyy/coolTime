@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { Food } from "../models/db";
 import { FOOD_LIST } from "../models/db";
-import "../assets/chicken.jpg";
 
 interface CTButtonProps extends Food {
   onEat: (foodId: string) => void;
@@ -20,12 +19,6 @@ const CTButton: React.FC<CTButtonProps> = ({
   _id,
   name
 }) => {
-  //이미지 여러개 임포트
-  const images = import.meta.glob("../assets/*.{png,jpg,jpeg,svg}", { eager: true });
-  const imageList = Object.values(images).map((m: any) => m.default);
-  imageList.map((src, i) => <img key={i} src={src} alt={`img-${i}`} />);
-
-
   const [remainingTime, setRemainingTime] = useState<number>(0);
 
   useEffect(() => {
@@ -71,14 +64,14 @@ const CTButton: React.FC<CTButtonProps> = ({
         <button
           onClick={handleClick}
           disabled={remainingTime > 0}
-          className={`relative w-24 h-24 rounded-full flex items-center justify-center font-bold text-white text-lg transition-all duration-300 shadow-lg border-2
+          className={`bg-${FOOD_LIST.find((food) => food.name === name)?.img ?? "blue-600"} relative w-24 h-24 rounded-full flex items-center justify-center font-bold text-white text-lg transition-all duration-100 shadow-lg border-2
             ${remainingTime > 0
-              ? "bg-gray-600 border-gray-700 cursor-not-allowed hover:bg-none hover:shadow-none"
-              : `bg-${FOOD_LIST.find((food) => food.name === name)?.img ?? "blue-600"} hover:bg-blue-700 border-blue-400 shadow-blue-400/50 hover:shadow-blue-500/70 animate-pulse`
+              ? "border-gray-700 cursor-not-allowed hover:shadow-none"
+              : `border-blue-400 shadow-blue-400/50 animate-pulse hover:animate-none hover:shadow-blue-400/10`
             }`}
         >
           {/* 쿨타임 원형 링 */}
-          {cooldown && (
+          {cooldown ? (
             <svg
               className="absolute top-0 left-0 w-full h-full rotate-[-90deg]"
               viewBox="0 0 100 100"
@@ -106,7 +99,7 @@ const CTButton: React.FC<CTButtonProps> = ({
                 />
               )}
             </svg>
-          )}
+          ) : <div/>}
         </button>
       </div>
 

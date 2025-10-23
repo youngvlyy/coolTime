@@ -20,7 +20,20 @@ const Auth: React.FC = () => {
       }
       navigate("/");
     } catch (error: any) {
-      alert("오류: " + error.message);
+      console.log(error.message);
+      switch (error.code) {
+        case "auth/invalid-credential":
+          alert("아이디/비밀번호를 잘못 입력하셨습니다");
+          break;
+        case "auth/user-not-found":
+          alert("가입되지 않은 계정입니다");
+          break;
+        case "auth/email-already-in-use":
+          alert("이미 가입된 계정입니다");
+          break;
+      }
+
+
     }
   };
 

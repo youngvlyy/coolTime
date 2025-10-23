@@ -1,5 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  safelist: [
+    "bg-pizza",
+    "bg-chicken",
+    "bg-hamburger",
+    "bg-mara",
+  ],
   content: [
     "./index.html", "./src/**/*.{js,ts,jsx,tsx}"
   ],

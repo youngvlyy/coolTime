@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CTButton from "../components/CTButton";
 import { calcCooldown } from "../utils/cooldown";
-import type { BodyProfile, User, Food} from "../models/db";
+import type { BodyProfile, User, Food } from "../models/db";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
   /** ✅ 유저 정보 로드 */
   useEffect(() => {
     axios.get(`/api/user/${user.uid}/${user.email}`).then((res) => {
-      setBody(res.data.body[0]|| []);
+      setBody(res.data.body[0] || []);
       setFoods(res.data.food || []);
     });
   }, [user]);
@@ -78,11 +78,16 @@ const Home: React.FC<HomeProps> = ({ user }) => {
       </div>
 
       {/* 🔹 BMI 정보 */}
-      {body && (
-        <p className="text-gray-700">
-          키: {body.height}cm, 몸무게: {body.weight}kg → BMI:{body.bmi}
-        </p>
+      {body?.bmi ? (
+        <div className="bg-gray-200 px-3 py-2 rounded-xl shadow-inner">
+          <span>키: <b>{body.height}cm</b></span>, 
+          <span> 몸무게: <b>{body.weight}kg</b></span>, 
+          <span> BMI: <b>{body.bmi}</b></span> 
+        </div>
+      ) : (
+       <div className="bg-gray-200 px-3 py-2 rounded-xl shadow-inner">마이페이지에서 정보를 입력해주세요</div>
       )}
+
 
       {/* 🔹 음식 버튼 목록 */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

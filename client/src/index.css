@@ -42,7 +42,7 @@ body {
            rounded-lg 
            bg-blue-600
            transition-colors
-           hover:bg-gradient-to-b from-[#0575E6] to-[#021B79] 
+           /* hover:bg-gradient-to-b from-[#0575E6] to-[#021B79]  */
            hover:shadow-md 
            shadow-blue-500/50 
            active:ring-4 
@@ -60,25 +60,25 @@ body {
   }
 
   .bg-pizza {
-  background-image: url('../assets/pizza.jpg');
+  background-image: url('./assets/pizza.jpg');
   background-size: cover;
   background-position: center;
 }
 
 .bg-chicken {
-  background-image: url('../assets/chicken.jpg');
+  background-image: url('./assets/chicken.jpg');
   background-size: cover;
   background-position: center;
 }
 
-.bg-hambuger {
-  background-image: url('../assets/hambuger.jpg');
+.bg-hamburger {
+  background-image: url('./assets/hamburger.jpg');
   background-size: cover;
   background-position: center;
 }
 
 .bg-mara {
-  background-image: url('../assets/mara.jpg');
+  background-image: url('./assets/mara.jpg');
   background-size: cover;
   background-position: center;
 }

@@ -74,32 +74,6 @@ router.get("/user/:uid/:email", async (req, res) => {
 });
 
 
-// 음식 등록 (POST)
-// router.post("/user/:uid/food", async (req, res) => {
-//   const { uid } = req.params;
-//   const { name, cooldown, lastEaten } = req.body;
-
-//   try {
-//     const user = await User.findOne({ uid });
-//     if (!user) return res.status(404).json({ message: "User not found" });
-
-//     const newFood = {
-//       _id: Date.now().toString() + name,
-//       name,
-//       cooldown,
-//       lastEaten,
-//     };
-
-//     user.food.push(newFood);
-//     await user.save();
-
-//     res.json(newFood);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// });
-
 // 음식 쿨타임 갱신 (PATCH)
 router.patch("/user/:uid/food/:foodId", async (req, res) => {
   const { uid, foodId } = req.params;
