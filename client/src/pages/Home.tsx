@@ -60,7 +60,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
     <div className="p-4">
       {/* 🔹 상단 헤더 */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">홈</h1>
+        <h1 className="text-xl font-bold">음식 쿨타임</h1>
         <div className="flex gap-2">
           <button
             onClick={goToMyPage}

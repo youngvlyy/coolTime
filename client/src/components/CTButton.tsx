@@ -43,8 +43,10 @@ const CTButton: React.FC<CTButtonProps> = ({
     const hours = Math.floor(totalSec / 3600);
     const minutes = Math.floor((totalSec % 3600) / 60);
     const seconds = totalSec % 60;
+    const day = Math.floor(hours/24); 
+    const remain = hours>24? `${day}일 남음 `:  `${hours}시간 ${minutes}분 ${seconds}초 남음`
     if (hours + minutes + seconds === 0) return "쿨타임 종료!";
-    return `${hours}시간 ${minutes}분 ${seconds}초 남음`;
+    return remain;
   };
 
   const handleClick = () => {
@@ -104,13 +106,17 @@ const CTButton: React.FC<CTButtonProps> = ({
       </div>
 
       {/* 칼로리 & 남은시간 표시 */}
-      <div className="mt-3 bg-gray-800 text-white px-3 py-2 rounded-xl shadow-inner w-40">
+      <div className="mt-3 bg-gray-800 text-white px-3 py-2 rounded-xl shadow-inner min-w-40">
         <h2 className="text-sm font-semibold mb-1">{name}</h2>
         <p className="text-xs text-gray-300 mb-1">칼로리: {FOOD_LIST.find((food) => food.name === name)?.calories ?? "??"} kcal</p>
         {remainingTime > 0 ? (
           <p className="text-red-400 text-xs">{formatRemaining(remainingTime)}</p>
         ) : (
-          <p className="text-green-400 text-xs">지금 먹을 수 있어요!</p>
+          <div>
+            <p className="text-green-400 text-xs">지금 먹을 수 있어요!</p>
+            <p className="text-gray-400 text-xs">음식을 드신 후 클릭해주세요!</p>
+
+          </div>
         )}
       </div>
     </div>

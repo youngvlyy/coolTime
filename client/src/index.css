@@ -36,28 +36,7 @@ body {
 
 /* 커스텀 버튼 컴포넌트 */
 @layer components {
-  button {
-    @apply text-white
-           ml-2 
-           rounded-lg 
-           bg-blue-600
-           transition-colors
-           /* hover:bg-gradient-to-b from-[#0575E6] to-[#021B79]  */
-           hover:shadow-md 
-           shadow-blue-500/50 
-           active:ring-4 
-           active:outline-none  
-           shadow-lg 
-           px-4 py-2;
-  }
-  button.new{
-    @apply bg-transparent
-    underline
-    text-black
-    shadow-none
-    hover:bg-none
-    hover:shadow-none
-  }
+  
 
   .bg-pizza {
   background-image: url('./assets/pizza.jpg');

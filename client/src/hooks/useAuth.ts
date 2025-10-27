@@ -26,7 +26,7 @@ export const useAuth = () => {
         if (err.response?.status === 404) {
           // 유저 자체가 없으면 새로 생성
           await axios.post(`/api/user/${uid}/${email}`, { uid, email });
-          console.log("위 에러 무시 => 새 유저 db 생성 과정");
+          console.warn("위 에러 무시 => 새 유저 db 생성 과정");
         } else {
           console.error("유저 확인 중 오류:", err);
         }
