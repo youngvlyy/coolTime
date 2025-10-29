@@ -34,16 +34,21 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+const BodyProfileSchema = new mongoose_1.Schema({
+    height: { type: Number, required: true },
+    weight: { type: Number, required: true },
+    bmi: { type: Number, required: true }
+});
 const CoolFoodSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    calories: { type: Number, required: true },
-    cooldown: { type: Number, required: true },
-    lastEaten: { type: Date, default: null },
-    savedCalories: { type: Number, default: 0 },
+    lastEaten: { type: String, required: true },
+    cooldown: { type: Number, default: 0 },
+    _id: { type: String, required: true }
 });
 const UserSchema = new mongoose_1.Schema({
     uid: { type: String, required: true, unique: true },
     email: { type: String, required: true },
-    coolFoods: [CoolFoodSchema],
+    body: [BodyProfileSchema],
+    food: [CoolFoodSchema]
 });
 exports.default = mongoose_1.default.model("User", UserSchema);

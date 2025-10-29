@@ -5,62 +5,75 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const User_1 = __importDefault(require("../models/User"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const router = express_1.default.Router();
-// GET /:uid/:email → 유저 조회 또는 자동 생성
+//마이페이지 수정
+router.patch("/bodyprofile", async (req, res) => {
+    const { uid, email, body, food } = req.body;
+    if (!uid || !email || !body)
+        return res.status(400).json({ error: "필수 값 누락" });
+    const user = await User_1.default.findOne({ uid, email });
+    if (!user)
+        return res.status(404).json({ message: "User not found" });
+    user.body = [body]; // 가장 최근 기록으로 덮어쓰기
+    // food 업데이트 (bmi가 바뀌었으니 초기화)
+    if (food && food.length) {
+        user.food = food.map((f) => ({
+            _id: new mongoose_1.default.Types.ObjectId().toString(),
+            name: f,
+            cooldown: 0,
+            lastEaten: 0,
+        }));
+    }
+    await user.save();
+    res.json({ success: true, body: user.body });
+});
+// 사용자 정보 등록
+router.post("/user/:uid/:email", async (req, res) => {
+    const { uid, email } = req.params; // ✅ 여기 중요
+    if (!uid || !email)
+        return res.status(400).json({ error: "필수 값 누락" });
+    let user = await User_1.default.findOne({ uid, email });
+    if (user)
+        return res.status(409).json({ message: "이미 존재하는 사용자" });
+    const newUser = new User_1.default({ uid, email, body: [], food: [] });
+    await newUser.save();
+    res.json({ success: true, uid, email });
+});
+// 사용자 정보 가져오기
 router.get("/user/:uid/:email", async (req, res) => {
     const { uid, email } = req.params;
     try {
-        let user = await User_1.default.findOne({ uid });
+        const user = await User_1.default.findOne({ uid, email });
         if (!user) {
-            user = new User_1.default({ uid, email, coolFoods: [] });
-            await user.save();
+            return res.status(404).json({ message: "User not found" });
         }
-        res.json(user);
+        const formattedUser = {
+            uid: user.uid,
+            email: user.email,
+            body: user.body || [],
+            food: user.food || [],
+        };
+        res.json(formattedUser);
     }
-    catch (err) {
-        console.error(err);
+    catch (error) {
+        console.error("Error fetching user:", error);
         res.status(500).json({ message: "Server error" });
     }
 });
-// POST /:uid/food → 새로운 음식 목표 추가
-router.post("/user/:uid/food", async (req, res) => {
-    const { name, calories, cooldown } = req.body;
-    if (!name || typeof calories !== "number" || typeof cooldown !== "number") {
-        return res.status(400).json({ message: "Invalid input" });
-    }
+// 음식 쿨타임 갱신 (PATCH)
+router.patch("/user/:uid/food/:foodId", async (req, res) => {
+    const { uid, foodId } = req.params;
+    const { lastEaten, cooldown } = req.body;
     try {
-        const user = await User_1.default.findOne({ uid: req.params.uid });
+        const user = await User_1.default.findOne({ uid });
         if (!user)
             return res.status(404).json({ message: "User not found" });
-        user.coolFoods.push({ name, calories, cooldown, lastEaten: null, savedCalories: 0 });
-        await user.save();
-        res.json(user);
-    }
-    catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
-    }
-});
-// PATCH /:uid/food/:foodId/eat → 오늘 섭취 여부 체크
-router.patch("/user/:uid/food/:foodId/eat", async (req, res) => {
-    try {
-        const user = await User_1.default.findOne({ uid: req.params.uid });
-        if (!user)
-            return res.status(404).json({ message: "User not found" });
-        const food = user.coolFoods.find(f => f._id?.toString() === req.params.foodId);
+        const food = user.food.find((f) => f._id === foodId);
         if (!food)
             return res.status(404).json({ message: "Food not found" });
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const lastEaten = food.lastEaten ? new Date(food.lastEaten) : null;
-        if (lastEaten && lastEaten >= today) {
-            food.lastEaten = today;
-            food.savedCalories = 0;
-        }
-        else {
-            food.savedCalories += food.calories;
-            food.lastEaten = today;
-        }
+        food.lastEaten = lastEaten;
+        food.cooldown = cooldown;
         await user.save();
         res.json(food);
     }
