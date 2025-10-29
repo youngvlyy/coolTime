@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, "../../client/dist")));
+app.use(express.static(path.join(__dirname, "../../client/dist")));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
@@ -19,9 +19,9 @@ app.use((req, res, next) => {
 });
 
 // SPA 처리: React 빌드의 index.html을 반환
-// app.get(/.*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
-// });
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+});
 
 
 
