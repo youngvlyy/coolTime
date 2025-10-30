@@ -17,6 +17,8 @@ app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url);
   next();
 });
+app.use("/api", userRouter);
+
 
 // SPA 처리: React 빌드의 index.html을 반환
 app.get(/.*/, (req, res) => {
@@ -25,7 +27,6 @@ app.get(/.*/, (req, res) => {
 
 
 
-app.use("/api", userRouter);
 
 const PORT = 4000;
 
