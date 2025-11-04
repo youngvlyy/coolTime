@@ -14,6 +14,8 @@ dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+app.use("/api", user_1.default);
+app.use("/api/user", user_1.default);
 app.use(express_1.default.static(path_1.default.join(__dirname, "../../client/dist")));
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use((req, res, next) => {
@@ -24,9 +26,13 @@ app.use((req, res, next) => {
 app.get(/.*/, (req, res) => {
     res.sendFile(path_1.default.join(__dirname, "../../client/dist/index.html"));
 });
-app.use("/api", user_1.default);
 const PORT = 4000;
+if (!process.env.MONGO_URI) {
+    console.error("MONGO_URI is not defined!");
+    process.exit(1); // 아예 서버 실행 중단
+}
 // const MONGO_URI = "mongodb://localhost:27017/cooltimeDB";
+console.log(process.env.MONGO_URI);
 mongoose_1.default.connect(process.env.MONGO_URI)
     .then(() => console.log("MongoDB connected"))
     .catch(err => console.error("MongoDB connection error:", err));
