@@ -9,23 +9,22 @@ const cors_1 = __importDefault(require("cors"));
 const user_1 = __importDefault(require("./routes/user"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const path_1 = __importDefault(require("path"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use("/api", user_1.default);
 app.use("/api/user", user_1.default);
-app.use(express_1.default.static(path_1.default.join(__dirname, "../../client/dist")));
+// app.use(express.static(path.join(__dirname, "../../client/dist")));
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     console.log("Incoming request:", req.method, req.url);
     next();
 });
 // SPA 처리: React 빌드의 index.html을 반환
-app.get(/.*/, (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, "../../client/dist/index.html"));
-});
+// app.get(/.*/, (req, res) => {
+//   res.sendFile(path.join(__dirname, "../../client/dist/index.html"));
+// });
 const PORT = 4000;
 if (!process.env.MONGO_URI) {
     console.error("MONGO_URI is not defined!");
