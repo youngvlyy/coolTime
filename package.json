@@ -2,14 +2,12 @@
   "name": "cool-time",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.ts",
   "scripts": {
-  "dev": "concurrently \"node --loader ts-node/esm server/index.ts\" \"npm --prefix client run dev\"",
-  "build": "tsc && npm --prefix client run build",
-  "start": "node dist/server/index.js"
-}
-,
+    "dev": "concurrently \"ts-node server/index.ts\" \"npm --prefix client run dev\"",
+    "build": "tsc && npm --prefix client run build",
+    "start": "node dist/server/index.js"
+  },
   "author": "sy",
   "license": "ISC",
   "dependencies": {

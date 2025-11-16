@@ -1,5 +1,5 @@
 import express from "express";
-import User, { BodyProfile } from "../models/User.js";
+import User, { BodyProfile } from "../models/User";
 import mongoose from "mongoose";
 
 const router = express.Router();
