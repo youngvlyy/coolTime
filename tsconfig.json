@@ -7,15 +7,11 @@
     "rootDir": "./server",
     "outDir": "./dist",
 
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
     "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
 
     "sourceMap": true,
-    "declaration": false,
-    "declarationMap": false,
-
     "isolatedModules": true,
 
     "verbatimModuleSyntax": false
