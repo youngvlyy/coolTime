@@ -35,7 +35,7 @@ router.patch("/bodyprofile", async (req, res) => {
 
 // 사용자 정보 등록
 router.post("/user/:uid/:email", async (req, res) => {
-  const { uid, email } = req.params; // ✅ 여기 중요
+  const { uid, email } = req.params;
   if (!uid || !email) return res.status(400).json({ error: "필수 값 누락" });
 
   let user = await User.findOne({ uid, email });
@@ -55,7 +55,7 @@ router.get("/user/:uid/:email", async (req, res) => {
   try {
     const user = await User.findOne({ uid, email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.json(null);
     }
 
     const formattedUser = {

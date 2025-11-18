@@ -19,17 +19,19 @@ export const useAuth = () => {
       setUser({ uid, email });
 
       try {
-        // 먼저 유저가 DB에 존재하는지 확인
-        const res = await axios.get(`/api/user/${uid}/${email}`);
-        console.log(res.data);
-      } catch (err: any) {
-        if (err.response?.status === 404) {
-          // 유저 자체가 없으면 새로 생성
-          await axios.post(`/api/user/${uid}/${email}`, { uid, email });
-          console.warn("위 에러 무시 => 새 유저 db 생성 과정");
-        } else {
-          console.error("유저 확인 중 오류:", err);
-        }
+        await axios
+          .get(`/api/user/${uid}/${email}`)
+          .then(async (res) => {
+            if (!res.data) {
+              //새 유저 생성
+              await axios.post(`/api/user/${uid}/${email}`, { uid, email });
+              console.warn("새 유저 생성 완료");
+              return;
+            }
+            console.log("기존 유저 데이터:", res.data);
+          });
+      } catch (err) {
+        console.error("유저 확인 중 오류:", err);
       }
     });
 

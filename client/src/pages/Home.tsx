@@ -16,7 +16,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
   const [foods, setFoods] = useState<Food[]>([]);
   const navigate = useNavigate();
 
-  /** ✅ 유저 정보 로드 */
+  /** 유저 정보 로드 */
   useEffect(() => {
     axios.get(`/api/user/${user.uid}/${user.email}`).then((res) => {
       setBody(res.data.body[0] || []);
