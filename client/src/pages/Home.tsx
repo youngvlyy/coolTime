@@ -19,8 +19,8 @@ const Home: React.FC<HomeProps> = ({ user }) => {
   /** 유저 정보 로드 */
   useEffect(() => {
     axios.get(`/api/user/${user.uid}/${user.email}`).then((res) => {
-      setBody(res.data.body[0] || {});
-      setFoods(res.data.food || []);
+      setBody(res.data?.body[0] ?? {});
+      setFoods(res.data?.food ?? []);
     });
   }, [user]);
 
