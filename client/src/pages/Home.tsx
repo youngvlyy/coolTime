@@ -58,7 +58,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
 
   return (
     <div className="p-4">
-      {/* 🔹 상단 헤더 */}
+      {/* 상단 헤더 */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">음식 쿨타임</h1>
         <div className="flex gap-2">
@@ -77,7 +77,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
         </div>
       </div>
 
-      {/* 🔹 BMI 정보 */}
+      {/* BMI 정보 */}
       {body?.bmi ? (
         <div className="bg-gray-200 px-3 py-2 rounded-xl shadow-inner">
           <span>키: <b>{body.height}cm</b></span>, 
@@ -89,7 +89,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
       )}
 
 
-      {/* 🔹 음식 버튼 목록 */}
+      {/* 음식 버튼 목록 */}
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {foods && foods.map((food) => (
           <CTButton key={food.name} onEat={handleEat} {...food} />

@@ -4,7 +4,6 @@ import cors from "cors";
 import userRouter from "./routes/user";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import path from "path";
 
 dotenv.config();
 
