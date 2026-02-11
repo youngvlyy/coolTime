@@ -22,12 +22,12 @@ app.use((req, res, next) => {
 const PORT = 4000;
 
 if (!process.env.MONGO_URI) {
-  console.error("MONGO_URI is not defined!");
+  console.error("MONGO_URI 없음");
   process.exit(1); // 아예 서버 실행 중단
 }
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
+  .then(() => console.log("MongoDB 연결"))
+  .catch(err => console.error("MongoDB 연결 error:", err));
 
 app.listen(PORT,"0.0.0.0", () => console.log(`Server running on http://localhost:${PORT}`));
