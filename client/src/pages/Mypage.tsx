@@ -61,78 +61,84 @@ const Mypage: React.FC<MypageProps> = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-200 p-6">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">
-        <div className="flex justify-between items-center">
-          <button
-            onClick={() => navigate("/")}
-            className="px-3 py-1.5 text-sm font-medium text-white bg-blue-500 border border-blue-500 rounded-lg shadow-sm 
-             hover:bg-blue-600 hover:border-blue-600 active:scale-95 transition-transform duration-150"
-          >
-            ← 홈으로
-          </button>
+  <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    
+    <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-10 space-y-8">
+      
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate("/")}
+          className="text-sm font-medium border rounded-md p-2 text-gray-600 hover:bg-gray-100 transition"
+        >
+          홈으로
+        </button>
 
-          <h2 className="text-xl font-bold text-gray-800">마이페이지</h2>
+        <h2 className="text-xl font-semibold text-gray-800">
+          마이페이지
+        </h2>
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-6">
+        
+        {/* 키 */}
+        <div className="flex flex-col space-y-2">
+          <label htmlFor="height" className="text-sm text-gray-600">
+            키 (cm)
+          </label>
+          <input
+            type="number"
+            id="height"
+            value={height ?? ""}
+            onChange={(e) =>
+              setHeight(e.target.value ? Number(e.target.value) : null)
+            }
+            placeholder="예: 175"
+            className="px-4 py-3 rounded-lg border border-gray-300 
+                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                       outline-none transition"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* 키 입력 */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="height"
-              className="text-sm font-medium text-gray-600 mb-1"
-            >
-              키 (cm)
-            </label>
-            <input
-              type="number"
-              id="height"
-              value={height ?? ""}
-              onChange={(e) =>
-                setHeight(e.target.value ? Number(e.target.value) : null)
-              }
-              placeholder="예: 175"
-              className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition"
-            />
-          </div>
+        {/* 몸무게 */}
+        <div className="flex flex-col space-y-2">
+          <label htmlFor="weight" className="text-sm text-gray-600">
+            몸무게 (kg)
+          </label>
+          <input
+            type="number"
+            id="weight"
+            value={weight ?? ""}
+            onChange={(e) =>
+              setWeight(e.target.value ? Number(e.target.value) : null)
+            }
+            placeholder="예: 68"
+             className="px-4 py-3 rounded-lg border border-gray-300 
+                       focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                       outline-none transition"
+          />
+        </div>
 
-          {/* 몸무게 입력 */}
-          <div className="flex flex-col">
-            <label
-              htmlFor="weight"
-              className="text-sm font-medium text-gray-600 mb-1"
-            >
-              몸무게 (kg)
-            </label>
-            <input
-              type="number"
-              id="weight"
-              value={weight ?? ""}
-              onChange={(e) =>
-                setWeight(e.target.value ? Number(e.target.value) : null)
-              }
-              placeholder="예: 68"
-              className="px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none transition"
-            />
-          </div>
+        {/* 버튼 */}
+        <button
+          type="submit"
+          className="w-full py-3 rounded-lg border border-blue-500  text-blue-500 
+                     font-medium hover:bg-blue-600 hover:text-white
+                     active:scale-95 transition-all"
+        >
+          {hasBody ? "수정하기" : "등록하기"}
+        </button>
+      </form>
 
-          {/* 제출 버튼 */}
-          <button
-            type="submit"
-            className="w-full mt-4 py-2.5 font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition"
-          >
-            {hasBody ? "수정하기" : "등록하기"}
-          </button>
-        </form>
+      {bmi && (
+        <div className="text-center text-gray-700 bg-gray-100 py-3 rounded-lg font-medium">
+          현재 BMI: <span className="font-semibold">{bmi.toFixed(2)}</span>
+        </div>
+      )}
 
-        {bmi && (
-          <div className="text-center mt-4 text-gray-700 bg-blue-50 py-3 rounded-lg font-medium">
-            현재 BMI: <span className="font-bold">{bmi.toFixed(2)}</span>
-          </div>
-        )}
-      </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Mypage;

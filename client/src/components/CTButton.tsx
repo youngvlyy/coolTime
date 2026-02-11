@@ -9,7 +9,6 @@ interface CTButtonProps extends Food {
 }
 
 /**
- * 🍽️ CTButton
  * 음식별로 쿨타임과 먹기 버튼을 관리하는 컴포넌트
  */
 const CTButton: React.FC<CTButtonProps> = ({

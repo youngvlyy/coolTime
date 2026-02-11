@@ -31,6 +31,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
     const food = foods.find((f) => f._id === foodId);
     if (!food) return;
 
+    //음식과 bmi를 따져 쿨다운 시간 계산
     const newCooldown = calcCooldown(food.name, body.bmi);
 
     const res = await axios.patch(`/api/user/${user.uid}/food/${foodId}`, {
@@ -64,13 +65,13 @@ const Home: React.FC<HomeProps> = ({ user }) => {
         <div className="flex gap-2">
           <button
             onClick={goToMyPage}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            className="border border-blue-500 hover:shadow-lg hover:bg-gradient-to-b from-blue-400 to-blue-500 hover:text-white text-blue-500 px-4 py-2 rounded-lg transition"
           >
             마이페이지
           </button>
           <button
             onClick={handleLogout}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+            className="border border-red-500 hover:shadow-lg hover:bg-gradient-to-b from-red-400 to-red-500 hover:text-white text-red-500 px-4 py-2 rounded-lg transition"
           >
             로그아웃
           </button>
@@ -79,7 +80,7 @@ const Home: React.FC<HomeProps> = ({ user }) => {
 
       {/* BMI 정보 */}
       {body?.bmi ? (
-        <div className="bg-gray-200 px-3 py-2 rounded-xl shadow-inner">
+        <div className="bg-gray-50 px-3 py-2 rounded-xl shadow-inner">
           <span>키: <b>{body.height}cm</b></span>, 
           <span> 몸무게: <b>{body.weight}kg</b></span>, 
           <span> BMI: <b>{body.bmi}</b></span> 
