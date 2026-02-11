@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,  // or "0.0.0.0"
     proxy: {
       "/api": {
-        target: "https://www.cooltime.shop/",
+        target: "https://www.cooltime.shop",
         changeOrigin: true,
       },
     },
